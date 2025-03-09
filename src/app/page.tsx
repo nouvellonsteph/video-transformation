@@ -1,58 +1,368 @@
+'use client'
 import Image from "next/image";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+const defaultVideoUrl = "https://pub-d217a1fefa4346d09172e418e550c2e0.r2.dev/default.mp4";
+const exampleUrl = "https://video-transformation.justalittlebyte.ovh/cdn-cgi/media/";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
+  const [mode, setMode] = useState("");
+  const [time, setTime] = useState(0);
+  const [duration, setDuration] = useState(5);
+  const [width, setWidth] = useState(500);
+  const [height, setHeight] = useState(500);
+  const [fit, setFit] = useState("contain");
+  const [audio, setAudio] = useState(true);
+  const [format, setFormat] = useState("jpg");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [timeActive, setTimeActive] = useState(false);
+  const [durationActive, setDurationActive] = useState(false);
+  const [widthActive, setWidthActive] = useState(false);
+  const [heightActive, setHeightActive] = useState(false);
+  const [fitActive, setFitActive] = useState(false);
+  const [formatActive, setFormatActive] = useState(false);
+
+  const [transformedUrl, setTransformedUrl] = useState("");
+
+  useEffect(() => {
+    let transformationString = "";
+    const transformations: string[] = [];
+
+    transformations.push(`mode=${mode}`);
+
+    if (timeActive && time !== 0) {
+      transformations.push(`time=${time}s`);
+    }
+    if (durationActive && duration !== 5) {
+      transformations.push(`duration=${duration}s`);
+    }
+    if (widthActive && width !== 500) {
+      transformations.push(`width=${width}`);
+    }
+    if (heightActive && height !== 500) {
+      transformations.push(`height=${height}`);
+    }
+    if (fitActive && fit !== "contain") {
+      transformations.push(`fit=${fit}`);
+    }
+    if (audio && mode === "video") {
+      transformations.push(`audio=${audio}`);
+    }
+    if (formatActive && mode === "frame") {
+      transformations.push(`format=${format}`);
+    }
+
+    transformationString = transformations.join(",");
+
+    setTransformedUrl(`${exampleUrl}${transformationString}/${videoUrl}`);
+  }, [videoUrl, mode, time, duration, width, height, fit, audio, format, timeActive, durationActive, widthActive, heightActive, fitActive, formatActive]);
+
+
+  const handleVideoUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setVideoUrl(event.target.value);
+  };
+
+  return (
+    <div className="w-full grid text-justify items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <main className="flex flex-col gap-8 row-start-2 items-center text-justify sm:items-start">
+        <h1 className="text-2xl font-bold">Cloudflare Edge Video Transformation </h1>
+        <p className="text-sm text-muted-foreground">
+          Enter a video URL and apply transformations to it:
+        </p>
+
+        <Input
+          type="text"
+          placeholder="Video URL"
+          value={videoUrl}
+          onChange={handleVideoUrlChange}
+          className="w-full max-w-md"
+        />
+
+        {mode === "frame" || mode === "spritesheet" ? (
+          <img
+            src={transformedUrl}
+            className="w-full max-w-md"
+          />
+        ) : (
+          <video
+            src={transformedUrl}
+            controls
+            className="w-full max-w-md"
+          />
+        )}
+
+        <div className="w-full max-w-md flex flex-col gap-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Transformations</CardTitle>
+              <CardDescription>Apply transformations to the video.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="mode">Mode
+                  <p className="text-sm text-muted-foreground ml-2">
+                    The mode of transformation.
+                  </p>
+                </Label>
+                <Select onValueChange={(value) => setMode(value)}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="video">Video</SelectItem>
+                    <SelectItem value="frame">Frame</SelectItem>
+                    <SelectItem value="spritesheet">Spritesheet</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {(mode as string) !== "" && (mode as string) === "spritesheet" && (
+                <div className="flex flex-col gap-2">
+                  <Checkbox
+                    id="time-active"
+                    checked={timeActive}
+                    onCheckedChange={(checked) => setTimeActive(!!checked)}
+                    disabled={mode === ""}
+                  />
+                  <Label htmlFor="time">Time (s)
+                    <p className="text-sm text-muted-foreground ml-2">
+                      The time to seek to in the video.
+                    </p>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Slider
+                      id="time"
+                      defaultValue={[0]}
+                      max={30}
+                      min={0}
+                      step={1}
+                      onValueChange={(value) => setTime(value[0])}
+                      disabled={!timeActive || mode === ""}
+                    />
+                    <span>{time}</span>
+                  </div>
+                </div>
+              )}
+
+              {(mode as string) !== "" && (mode as string) === "spritesheet" && (
+                <div className="flex flex-col gap-2">
+                  <Checkbox
+                    id="time-active"
+                    checked={timeActive}
+                    onCheckedChange={(checked) => setTimeActive(!!checked)}
+                    disabled={mode === ""}
+                  />
+                  <Label htmlFor="time">Time (s)
+                    <p className="text-sm text-muted-foreground ml-2">
+                      The time to seek to in the video.
+                    </p>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Slider
+                      id="time"
+                      defaultValue={[0]}
+                      max={30}
+                      min={0}
+                      step={1}
+                      onValueChange={(value) => setTime(value[0])}
+                      disabled={!timeActive || mode === ""}
+                    />
+                    <span>{time}</span>
+                  </div>
+                </div>
+              )}
+
+              {(mode as string) !== "" && (mode as string) === "video" && (
+                <div className="flex flex-col gap-2">
+                  <Checkbox
+                    id="time-active"
+                    checked={timeActive}
+                    onCheckedChange={(checked) => setTimeActive(!!checked)}
+                    disabled={mode === ""}
+                  />
+                  <Label htmlFor="time">Time (s)
+                    <p className="text-sm text-muted-foreground ml-2">
+                      The time to seek to in the video.
+                    </p>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Slider
+                      id="time"
+                      defaultValue={[0]}
+                      max={30}
+                      min={0}
+                      step={1}
+                      onValueChange={(value) => setTime(value[0])}
+                      disabled={!timeActive || mode === ""}
+                    />
+                    <span>{time}</span>
+                  </div>
+                </div>
+              )}
+
+              {(mode as string) !== "" && (mode as string) === "video" && (
+                <div className="flex flex-col gap-2">
+                  <Checkbox
+                    id="duration-active"
+                    checked={durationActive}
+                    onCheckedChange={(checked) => setDurationActive(!!checked)}
+                    disabled={mode === ""}
+                  />
+                  <Label htmlFor="duration">Duration (s)
+                    <p className="text-sm text-muted-foreground ml-2">
+                      The duration of the video.
+                    </p>
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Slider
+                      id="duration"
+                      defaultValue={[5]}
+                      max={30}
+                      min={1}
+                      step={1}
+                      onValueChange={(value) => setDuration(value[0])}
+                      disabled={!durationActive || mode === ""}
+                    />
+                    <span>{duration}</span>
+                  </div>
+                </div>
+              )}
+
+              {(mode as string) !== "" && (mode as string) === "frame" && (
+                <div className="flex flex-col gap-2">
+                  <Checkbox
+                    id="format-active"
+                    checked={formatActive}
+                    onCheckedChange={(checked) => setFormatActive(!!checked)}
+                    disabled={mode === ""}
+                  />
+                  <Label htmlFor="format">Format
+                    <p className="text-sm text-muted-foreground ml-2">
+                      The format of the image.
+                    </p>
+                  </Label>
+                  <Select onValueChange={(value) => setFormat(value)} disabled={!formatActive || mode === ""}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select format" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="jpg">JPG</SelectItem>
+                      <SelectItem value="png">PNG</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {(mode as string) !== "" && (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <Checkbox
+                      id="width-active"
+                      checked={widthActive}
+                      onCheckedChange={(checked) => setWidthActive(!!checked)}
+                      disabled={mode === ""}
+                    />
+                    <Label htmlFor="width">Width (px)
+                      <p className="text-sm text-muted-foreground ml-2">
+                        The width of the video.
+                      </p>
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Slider
+                        id="width"
+                        defaultValue={[500]}
+                        max={2000}
+                        min={10}
+                        step={10}
+                        onValueChange={(value) => setWidth(value[0])}
+                        disabled={!widthActive || mode === ""}
+                      />
+                      <span>{width}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Checkbox
+                      id="height-active"
+                      checked={heightActive}
+                      onCheckedChange={(checked) => setHeightActive(!!checked)}
+                      disabled={mode === ""}
+                    />
+                    <Label htmlFor="height">Height (px)
+                      <p className="text-sm text-muted-foreground ml-2">
+                        The height of the video.
+                      </p>
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Slider
+                        id="height"
+                        defaultValue={[500]}
+                        max={2000}
+                        min={10}
+                        step={10}
+                        onValueChange={(value) => setHeight(value[0])}
+                        disabled={!heightActive || mode === ""}
+                      />
+                      <span>{height}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Checkbox
+                      id="fit-active"
+                      checked={fitActive}
+                      onCheckedChange={(checked) => setFitActive(!!checked)}
+                      disabled={mode === ""}
+                    />
+                    <Label htmlFor="fit">Fit
+                      <p className="text-sm text-muted-foreground ml-2">
+                        The fit of the video.
+                      </p>
+                    </Label>
+                    <Select onValueChange={(value) => setFit(value)} disabled={!fitActive}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select fit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="contain">Contain</SelectItem>
+                        <SelectItem value="cover">Cover</SelectItem>
+                        <SelectItem value="scale-down">Scale Down</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+
+              {mode !== "" && (mode as string) === "video" && (
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="audio">Audio
+                    <p className="text-sm text-muted-foreground ml-2">
+                      Whether to include audio.
+                    </p>
+                  </Label>
+                  <Checkbox
+                    id="audio"
+                    checked={audio}
+                    onCheckedChange={(checked) => setAudio(!!checked)}
+                    disabled={mode === ""}
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href="https://developers.cloudflare.com/stream/transform-videos/#mode"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -63,37 +373,7 @@ export default function Home() {
             width={16}
             height={16}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
+          Learn more about Cloudflare video transformations
         </a>
       </footer>
     </div>
