@@ -32,7 +32,34 @@ export default function Home() {
   const [formatActive, setFormatActive] = useState(false);
 
   const [transformedUrl, setTransformedUrl] = useState("");
+  const [responseHeaders, setResponseHeaders] = useState<string | null>(null);
   const [presetSelected, setPresetSelected] = useState(false);
+
+  useEffect(() => {
+    const fetchHeaders = async () => {
+      try {
+        const response = await fetch(transformedUrl, { mode: 'cors' });
+
+        if (!response.ok) {
+          setResponseHeaders(`HTTP error! status: ${response.status}`);
+          return;
+        }
+
+        const headers = Object.fromEntries(response.headers.entries());
+        setResponseHeaders(JSON.stringify(headers, null, 2));
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setResponseHeaders(error.message);
+        } else {
+          setResponseHeaders("An unknown error occurred.");
+        }
+      }
+    };
+
+    if (transformedUrl) {
+      fetchHeaders();
+    }
+  }, [transformedUrl]);
 
   const handlePresetSelect = (preset: Preset) => {
     setMode(preset.mode);
@@ -87,7 +114,9 @@ export default function Home() {
 
     transformationString = transformations.join(",");
 
-    setTransformedUrl(`${exampleUrl}${transformationString}/${videoUrl}`);
+    const url = `${exampleUrl}${transformationString}/${videoUrl}`;
+    setTransformedUrl(url);
+
   }, [videoUrl, mode, time, duration, width, height, fit, audio, format, timeActive, durationActive, widthActive, heightActive, fitActive, formatActive]);
 
 
@@ -96,41 +125,64 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full grid text-justify items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center text-justify sm:items-start">
-        <h1 className="text-2xl font-bold">Cloudflare Edge Video Transformation </h1>
-        <p className="text-sm text-muted-foreground">
-          Enter a video URL and apply transformations to it:
-        </p>
-
-        <Input
-          type="text"
-          placeholder="Video URL"
-          value={videoUrl}
-          onChange={handleVideoUrlChange}
-          className="w-full max-w-md"
-        />
-
-        {mode === "frame" || mode === "spritesheet" ? (
-          <img
-            src={transformedUrl}
+    
+      <div className="grid text-justify items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+        <main className="flex flex-col gap-8 row-start-2 items-center text-justify sm:items-start">
+        <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Cloudflare Edge Video Transformation</CardTitle>
+        <CardDescription>Enter a video URL and apply transformations to it</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+      <Input
+            type="text"
+            placeholder="Video URL"
+            value={videoUrl}
+            onChange={handleVideoUrlChange}
             className="w-full max-w-md"
           />
-        ) : (
-          <video
-            src={transformedUrl}
-            controls
-            autoPlay
-            className="w-full max-w-md"
-          />
-        )}
 
-        
+          {mode === "frame" || mode === "spritesheet" ? (
+            <Image
+              src={transformedUrl}
+              alt="Transformed video frame"
+              width={500}
+              height={500}
+              className="w-full max-w-md rounded-2xl"
+            />
+          ) : (
+            <video
+              src={transformedUrl}
+              controls
+              autoPlay
+              muted
+              loop
+              className="w-full max-w-md rounded-2xl"
+            />
+          )}
+          <div className="text-lime-300 rounded-2xl" style={{ 
+            backgroundColor: '#000', 
+            fontFamily: 'monospace', 
+            fontSize: '10px',
+            padding: '10px', 
+            overflowX: 'auto',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-all'
+          }}>
+            <h3>Transformed URL</h3>
+            <p>{transformedUrl}</p>
+            <h3>Response Headers</h3>
+            <p>{responseHeaders}</p>
+          </div>
+      </CardContent>
+
+          
+          </Card>
 
         <div className="w-full max-w-md flex flex-col gap-4">
-        {1 && (
-          <PresetSelect onSelectPreset={handlePresetSelect} />
-        )}
+          {1 && (
+            <PresetSelect onSelectPreset={handlePresetSelect} />
+          )}
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle>Transformations</CardTitle>
@@ -354,4 +406,5 @@ export default function Home() {
         </a>
       </footer>
     </div>
-  )};
+  )
+};
