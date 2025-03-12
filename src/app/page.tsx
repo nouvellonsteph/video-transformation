@@ -46,7 +46,10 @@ export default function Home() {
         }
 
         const headers = Object.fromEntries(response.headers.entries());
-        setResponseHeaders(JSON.stringify(headers, null, 2));
+        const cfHeaders = Object.fromEntries(
+          Object.entries(headers).filter(([key]) => key.startsWith('cf-'))
+        );
+        setResponseHeaders(JSON.stringify(cfHeaders, null, 2));
       } catch (error: unknown) {
         if (error instanceof Error) {
           setResponseHeaders(error.message);
@@ -171,7 +174,7 @@ export default function Home() {
           }}>
             <h3>Transformed URL</h3>
             <p>{transformedUrl}</p>
-            <h3>Response Headers</h3>
+            <h3>Cloudflare Response Headers</h3>
             <p>{responseHeaders}</p>
           </div>
       </CardContent>
