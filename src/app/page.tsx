@@ -148,7 +148,7 @@ export default function Home() {
                     The mode of transformation.
                   </p>
                 </Label>
-                <Select onValueChange={(value) => setMode(value)}>
+                <Select value={mode} onValueChange={(value) => setMode(value)}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select mode" />
                   </SelectTrigger>
@@ -216,7 +216,7 @@ export default function Home() {
                 </div>
               )}
 
-              {(mode as string) !== "" && (mode as string) === "video" || (mode as string) === "frame" && (
+              {(mode as string) !== "" && (
                 <div className="flex flex-col gap-2">
                   <Checkbox
                     id="time-active"
@@ -244,7 +244,7 @@ export default function Home() {
                 </div>
               )}
 
-              {(mode as string) !== "" && (mode as string) === "video" || (mode as string) === "frame" && (
+              {(mode as string) !== "" && (
                 <div className="flex flex-col gap-2">
                   <Checkbox
                     id="duration-active"
@@ -285,7 +285,7 @@ export default function Home() {
                       The format of the image.
                     </p>
                   </Label>
-                  <Select onValueChange={(value) => setFormat(value)} disabled={!formatActive || mode === ""}>
+                  <Select value={format} onValueChange={(value) => setFormat(value)} disabled={!formatActive || mode === ""}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select format" />
                     </SelectTrigger>
@@ -363,7 +363,7 @@ export default function Home() {
                         The fit of the video.
                       </p>
                     </Label>
-                    <Select onValueChange={(value) => setFit(value)} disabled={!fitActive}>
+                    <Select value={fit} onValueChange={(value) => setFit(value)} disabled={!fitActive}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select fit" />
                       </SelectTrigger>
@@ -415,5 +415,4 @@ export default function Home() {
         </a>
       </footer>
     </div>
-  );
-}
+  )};
