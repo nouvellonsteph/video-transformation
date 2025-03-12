@@ -128,18 +128,18 @@ export default function Home() {
     
       <div className="grid text-justify items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
         <main className="flex flex-col gap-8 row-start-2 items-center text-justify sm:items-start">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-2xl">
       <CardHeader>
         <CardTitle>Cloudflare Edge Video Transformation</CardTitle>
         <CardDescription>Enter a video URL and apply transformations to it</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-4">
+      <CardContent className="grid gap-4 items-center justify-items-center">
       <Input
             type="text"
             placeholder="Video URL"
             value={videoUrl}
             onChange={handleVideoUrlChange}
-            className="w-full max-w-md"
+            className="w-full"
           />
 
           {mode === "frame" || mode === "spritesheet" ? (
@@ -148,7 +148,7 @@ export default function Home() {
               alt="Transformed video frame"
               width={500}
               height={500}
-              className="w-full max-w-md rounded-2xl"
+              className="rounded-2xl"
             />
           ) : (
             <video
@@ -157,7 +157,7 @@ export default function Home() {
               autoPlay
               muted
               loop
-              className="w-full max-w-md rounded-2xl"
+              className="rounded-2xl"
             />
           )}
           <div className="text-lime-300 rounded-2xl" style={{ 
@@ -179,11 +179,11 @@ export default function Home() {
           
           </Card>
 
-        <div className="w-full max-w-md flex flex-col gap-4">
+        <div className="w-full max-w-2xl flex flex-col gap-4">
           {1 && (
             <PresetSelect onSelectPreset={handlePresetSelect} />
           )}
-          <Card className="w-full max-w-md">
+          <Card className="w-full">
             <CardHeader>
               <CardTitle>Transformations</CardTitle>
               <CardDescription>Apply transformations to the video.</CardDescription>
