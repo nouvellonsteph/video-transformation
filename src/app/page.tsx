@@ -143,7 +143,7 @@ export default function Home() {
           />
 
           {mode === "frame" || mode === "spritesheet" ? (
-            <Image
+            <img
               src={transformedUrl}
               alt="Transformed video frame"
               width={500}
