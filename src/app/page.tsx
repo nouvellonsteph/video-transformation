@@ -36,18 +36,12 @@ export default function Home() {
 
   const handlePresetSelect = (preset: Preset) => {
     setMode(preset.mode);
-    //setTimeActive(true)
     setTime(preset.time);
-    //setDurationActive(true)
     setDuration(preset.duration);
-    //setWidthActive(true)
     setWidth(preset.width);
-    //setHeightActive(true)
     setHeight(preset.height);
-    //setFitActive(true)
     setFit(preset.fit);
     setAudio(preset.audio);
-    //setFormatActive(true)
     setFormat(preset.format);
     setPresetSelected(true);
   };
@@ -126,6 +120,7 @@ export default function Home() {
           <video
             src={transformedUrl}
             controls
+            autoPlay
             className="w-full max-w-md"
           />
         )}
@@ -159,62 +154,6 @@ export default function Home() {
                   </SelectContent>
                 </Select>
               </div>
-
-              {(mode as string) !== "" && (mode as string) === "spritesheet" && (
-                <div className="flex flex-col gap-2">
-                  <Checkbox
-                    id="time-active"
-                    checked={timeActive}
-                    onCheckedChange={(checked) => setTimeActive(!!checked)}
-                    disabled={mode === ""}
-                  />
-                  <Label htmlFor="time">Time (s)
-                    <p className="text-sm text-muted-foreground ml-2">
-                      The time to seek to in the video.
-                    </p>
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Slider
-                      id="time"
-                      defaultValue={[0]}
-                      max={30}
-                      min={0}
-                      step={1}
-                      onValueChange={(value) => setTime(value[0])}
-                      disabled={!timeActive || mode === ""}
-                    />
-                    <span>{time}</span>
-                  </div>
-                </div>
-              )}
-
-              {(mode as string) !== "" && (mode as string) === "spritesheet" && (
-                <div className="flex flex-col gap-2">
-                  <Checkbox
-                    id="time-active"
-                    checked={timeActive}
-                    onCheckedChange={(checked) => setTimeActive(!!checked)}
-                    disabled={mode === ""}
-                  />
-                  <Label htmlFor="time">Time (s)
-                    <p className="text-sm text-muted-foreground ml-2">
-                      The time to seek to in the video.
-                    </p>
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Slider
-                      id="time"
-                      defaultValue={[0]}
-                      max={30}
-                      min={0}
-                      step={1}
-                      onValueChange={(value) => setTime(value[0])}
-                      disabled={!timeActive || mode === ""}
-                    />
-                    <span>{time}</span>
-                  </div>
-                </div>
-              )}
 
               {(mode as string) !== "" && (
                 <div className="flex flex-col gap-2">
