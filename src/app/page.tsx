@@ -7,6 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Preset } from "@/components/ui/preset-select";
+import PresetSelect from "@/components/ui/preset-select";
 
 const defaultVideoUrl = "https://pub-d217a1fefa4346d09172e418e550c2e0.r2.dev/default.mp4";
 const exampleUrl = "https://video-transformation.justalittlebyte.ovh/cdn-cgi/media/";
@@ -30,6 +32,36 @@ export default function Home() {
   const [formatActive, setFormatActive] = useState(false);
 
   const [transformedUrl, setTransformedUrl] = useState("");
+  const [presetSelected, setPresetSelected] = useState(false);
+
+  const handlePresetSelect = (preset: Preset) => {
+    setMode(preset.mode);
+    //setTimeActive(true)
+    setTime(preset.time);
+    //setDurationActive(true)
+    setDuration(preset.duration);
+    //setWidthActive(true)
+    setWidth(preset.width);
+    //setHeightActive(true)
+    setHeight(preset.height);
+    //setFitActive(true)
+    setFit(preset.fit);
+    setAudio(preset.audio);
+    //setFormatActive(true)
+    setFormat(preset.format);
+    setPresetSelected(true);
+  };
+
+  useEffect(() => {
+    if (presetSelected) {
+      setTimeActive(true);
+      setDurationActive(true);
+      setWidthActive(true);
+      setHeightActive(true);
+      setFitActive(true);
+      setFormatActive(true);
+    }
+  }, [presetSelected]);
 
   useEffect(() => {
     let transformationString = "";
@@ -37,19 +69,19 @@ export default function Home() {
 
     transformations.push(`mode=${mode}`);
 
-    if (timeActive && time !== 0) {
+    if (timeActive) {
       transformations.push(`time=${time}s`);
     }
-    if (durationActive && duration !== 5) {
+    if (durationActive) {
       transformations.push(`duration=${duration}s`);
     }
-    if (widthActive && width !== 500) {
+    if (widthActive) {
       transformations.push(`width=${width}`);
     }
-    if (heightActive && height !== 500) {
+    if (heightActive) {
       transformations.push(`height=${height}`);
     }
-    if (fitActive && fit !== "contain") {
+    if (fitActive) {
       transformations.push(`fit=${fit}`);
     }
     if (audio && mode === "video") {
@@ -98,7 +130,12 @@ export default function Home() {
           />
         )}
 
+        
+
         <div className="w-full max-w-md flex flex-col gap-4">
+        {1 && (
+          <PresetSelect onSelectPreset={handlePresetSelect} />
+        )}
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle>Transformations</CardTitle>
@@ -179,7 +216,7 @@ export default function Home() {
                 </div>
               )}
 
-              {(mode as string) !== "" && (mode as string) === "video" && (
+              {(mode as string) !== "" && (mode as string) === "video" || (mode as string) === "frame" && (
                 <div className="flex flex-col gap-2">
                   <Checkbox
                     id="time-active"
@@ -207,7 +244,7 @@ export default function Home() {
                 </div>
               )}
 
-              {(mode as string) !== "" && (mode as string) === "video" && (
+              {(mode as string) !== "" && (mode as string) === "video" || (mode as string) === "frame" && (
                 <div className="flex flex-col gap-2">
                   <Checkbox
                     id="duration-active"
@@ -357,6 +394,7 @@ export default function Home() {
               )}
             </CardContent>
           </Card>
+
         </div>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
